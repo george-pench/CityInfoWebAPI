@@ -1,3 +1,4 @@
+using CityInfoWebAPI.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -18,6 +19,7 @@ namespace CityInfoWebAPI
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<ICitiesRepository, CitiesRepository>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
