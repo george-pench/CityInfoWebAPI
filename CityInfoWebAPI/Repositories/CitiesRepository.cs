@@ -17,8 +17,8 @@ namespace CityInfoWebAPI.Repositories
             new City { Id = Guid.NewGuid(), Name = "Sofia", Country = "Bulgaria", Population = 1.236, Timezone = "GMT+3", CreatedDate = DateTimeOffset.UtcNow }
         };
 
-        public City GetCity(Guid id) => cities.Where(city => city.Id == id).SingleOrDefault();
-
+        public City GetCity(Guid id) => this.cities.Where(city => city.Id == id).SingleOrDefault();
         public IEnumerable<City> GetCities() => this.cities;
+        public void CreateCity(City city) => this.cities.Add(city);
     }
 }

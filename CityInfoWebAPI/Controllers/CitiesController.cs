@@ -1,8 +1,11 @@
-﻿using CityInfoWebAPI.Models;
+﻿using CityInfoWebAPI.Dtos;
+using CityInfoWebAPI.Extensions;
+using CityInfoWebAPI.Models;
 using CityInfoWebAPI.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CityInfoWebAPI.Controllers
 {
@@ -17,26 +20,46 @@ namespace CityInfoWebAPI.Controllers
             this.repository = repository;
         }
 
-        // GET /items
+        // GET /cities
         [HttpGet]
-        public IEnumerable<City> GetCities() 
+        public IEnumerable<CityDto> GetCities() 
         {
-            var cities = this.repository.GetCities();
+            var cities = this.repository.GetCities().Select(city => city.AsDto());
+
             return cities;
         }
-            
-        // GET /items/{id}
+
+        // GET /cities/{id}
         [HttpGet("{id}")]
-        public ActionResult<City> GetCity(Guid id) 
+        public ActionResult<CityDto> GetCity(Guid id) 
         {
-            var city = this.repository.GetCity(id);
+            var city = this.repository.GetCity(id);            
 
             if (city is null)
             {
                 return this.NotFound();
             }
 
-            return city;
+            return city.AsDto();
+        }
+
+        // POST /cities
+        [HttpPost]
+        public ActionResult<CreateCityDto> CreateCity(CreateCityDto cityDto)
+        {
+            City city = new City()
+            {
+                Id = Guid.NewGuid(),
+                Name = cityDto.Name,
+                Country = cityDto.Country,
+                Population = cityDto.Population,
+                Timezone = cityDto.Timezone,
+                CreatedDate = DateTimeOffset.UtcNow
+            };
+
+            this.repository.CreateCity(city);
+
+            return CreatedAtAction(nameof(this.GetCity), new { id = city.Id }, city.AsDto());
         }
     }
 }

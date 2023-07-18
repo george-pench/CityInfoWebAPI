@@ -7,7 +7,7 @@ namespace CityInfoWebAPI.Repositories
     public interface ICitiesRepository
     {
         City GetCity(Guid id);
-
         IEnumerable<City> GetCities();
+        void CreateCity(City city);
     }
 }
