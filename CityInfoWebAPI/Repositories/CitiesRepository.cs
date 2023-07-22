@@ -18,7 +18,21 @@ namespace CityInfoWebAPI.Repositories
         };
 
         public City GetCity(Guid id) => this.cities.Where(city => city.Id == id).SingleOrDefault();
+
         public IEnumerable<City> GetCities() => this.cities;
+
         public void CreateCity(City city) => this.cities.Add(city);
+
+        public void UpdateCity(City city)
+        {
+            var index = this.cities.FindIndex(existingCity => existingCity.Id == city.Id);
+            this.cities[index] = city;
+        }
+
+        public void DeleteCity(Guid id)
+        {
+            var index = this.cities.FindIndex(existingCity => existingCity.Id == id);
+            this.cities.RemoveAt(index);
+        }
     }
 }

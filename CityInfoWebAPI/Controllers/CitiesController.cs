@@ -61,5 +61,45 @@ namespace CityInfoWebAPI.Controllers
 
             return CreatedAtAction(nameof(this.GetCity), new { id = city.Id }, city.AsDto());
         }
+
+        // PUT /cities/{id}
+        [HttpPut]
+        public ActionResult UpdateCity(Guid id, UpdateCityDto cityDto)
+        {
+            var existingCity = this.repository.GetCity(id);
+
+            if (existingCity is null)
+            {
+                return this.NotFound();
+            }
+
+            City updatedCity = existingCity with
+            {
+                Name = cityDto.Name,
+                Country = cityDto.Country,
+                Population = cityDto.Population,
+                Timezone = cityDto.Timezone,
+            };
+
+            this.repository.UpdateCity(updatedCity);
+
+            return this.NoContent();
+        }
+
+        // DELETE /cities/{id}
+        [HttpDelete("{id}")]
+        public ActionResult DeleteCity(Guid id) 
+        {
+            var existingCity = this.repository.GetCity(id);
+
+            if (existingCity is null)
+            {
+                return this.NotFound();
+            }
+
+            this.repository.DeleteCity(id);
+
+            return this.NoContent();
+        }
     }
 }

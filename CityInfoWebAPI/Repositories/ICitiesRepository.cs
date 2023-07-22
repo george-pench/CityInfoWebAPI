@@ -9,5 +9,7 @@ namespace CityInfoWebAPI.Repositories
         City GetCity(Guid id);
         IEnumerable<City> GetCities();
         void CreateCity(City city);
+        void UpdateCity(City city);
+        void DeleteCity(Guid id);
     }
 }
