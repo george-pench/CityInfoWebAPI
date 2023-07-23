@@ -1,3 +1,4 @@
+using CityInfoWebAPI.Configurations;
 using CityInfoWebAPI.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -5,6 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
+using MongoDB.Driver;
 
 namespace CityInfoWebAPI
 {
@@ -19,7 +24,18 @@ namespace CityInfoWebAPI
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<ICitiesRepository, CitiesRepository>();
+            // anytime it sees a GUID/DateTimeOffset in any of our entities, it should serialize them as a string in the database
+            BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
+            BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
+
+            services.AddSingleton<IMongoClient>(serviceProvider =>
+            {
+
+                var configs = Configuration.GetSection(nameof(MongoDbConfigurations)).Get<MongoDbConfigurations>();
+                return new MongoClient(configs.ConnectionString);
+            });
+
+            services.AddSingleton<ICitiesRepository, MongoDbCitiesRepository>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
