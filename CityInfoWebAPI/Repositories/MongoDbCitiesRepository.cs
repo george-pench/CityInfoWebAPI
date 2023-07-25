@@ -3,6 +3,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CityInfoWebAPI.Repositories
 {
@@ -17,29 +18,31 @@ namespace CityInfoWebAPI.Repositories
         public MongoDbCitiesRepository(IMongoClient mongoClient)
         {
             IMongoDatabase database = mongoClient.GetDatabase(databaseName);
-            citiesCollection = database.GetCollection<City>(collectionName);
+            this.citiesCollection = database.GetCollection<City>(collectionName);
         }
 
-        public void CreateCity(City city) => this.citiesCollection.InsertOne(city);
-
-        public void DeleteCity(Guid id)
+        public async Task<City> GetCityAsync(Guid id)
         {
             var filter = this.filterDefinitionBuilder.Eq(city => city.Id, id);
-            this.citiesCollection.DeleteOne(filter);
+            return await this.citiesCollection.Find(filter).SingleOrDefaultAsync();
         }
 
-        public IEnumerable<City> GetCities() => this.citiesCollection.Find(new BsonDocument()).ToList();
+        public async Task<IEnumerable<City>> GetCitiesAsync() 
+            => await this.citiesCollection.Find(new BsonDocument()).ToListAsync();       
 
-        public City GetCity(Guid id)
-        {
-            var filter = this.filterDefinitionBuilder.Eq(city => city.Id, id);
-            return this.citiesCollection.Find(filter).SingleOrDefault();
-        }
+        public async Task CreateCityAsync(City city) 
+            => await this.citiesCollection.InsertOneAsync(city);
 
-        public void UpdateCity(City city)
+        public async Task UpdateCityAsync(City city)
         {
             var filter = this.filterDefinitionBuilder.Eq(existingCity => existingCity.Id, city.Id);
-            this.citiesCollection.ReplaceOne(filter, city);
+            await this.citiesCollection.ReplaceOneAsync(filter, city);
+        }
+
+        public async Task DeleteCityAsync(Guid id)
+        {
+            var filter = this.filterDefinitionBuilder.Eq(city => city.Id, id);
+            await this.citiesCollection.DeleteOneAsync(filter);
         }
     }
 }

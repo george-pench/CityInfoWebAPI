@@ -1,15 +1,16 @@
 ﻿using CityInfoWebAPI.Models;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CityInfoWebAPI.Repositories
 {
     public interface ICitiesRepository
     {
-        City GetCity(Guid id);
-        IEnumerable<City> GetCities();
-        void CreateCity(City city);
-        void UpdateCity(City city);
-        void DeleteCity(Guid id);
+        Task<City> GetCityAsync(Guid id);
+        Task<IEnumerable<City>> GetCitiesAsync();
+        Task CreateCityAsync(City city);
+        Task UpdateCityAsync(City city);
+        Task DeleteCityAsync(Guid id);
     }
 }

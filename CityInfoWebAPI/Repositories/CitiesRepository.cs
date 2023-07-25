@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CityInfoWebAPI.Repositories
 {
@@ -17,22 +18,32 @@ namespace CityInfoWebAPI.Repositories
             new City { Id = Guid.NewGuid(), Name = "Sofia", Country = "Bulgaria", Population = 1.236, Timezone = "GMT+3", CreatedDate = DateTimeOffset.UtcNow }
         };
 
-        public City GetCity(Guid id) => this.cities.Where(city => city.Id == id).SingleOrDefault();
+        public async Task<City> GetCityAsync(Guid id)
+        {
+            var city = this.cities.Where(city => city.Id == id).SingleOrDefault();
+            return await Task.FromResult(city);
+        }
 
-        public IEnumerable<City> GetCities() => this.cities;
+        public async Task<IEnumerable<City>> GetCitiesAsync() => await Task.FromResult(this.cities);
 
-        public void CreateCity(City city) => this.cities.Add(city);
+        public async Task CreateCityAsync(City city)
+        {
+            this.cities.Add(city);
+            await Task.CompletedTask;
+        }
 
-        public void UpdateCity(City city)
+        public async Task UpdateCityAsync(City city)
         {
             var index = this.cities.FindIndex(existingCity => existingCity.Id == city.Id);
             this.cities[index] = city;
+            await Task.CompletedTask;
         }
 
-        public void DeleteCity(Guid id)
+        public async Task DeleteCityAsync(Guid id)
         {
             var index = this.cities.FindIndex(existingCity => existingCity.Id == id);
             this.cities.RemoveAt(index);
+            await Task.CompletedTask;
         }
     }
 }

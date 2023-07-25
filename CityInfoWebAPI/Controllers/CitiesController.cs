@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CityInfoWebAPI.Controllers
 {
@@ -22,18 +23,19 @@ namespace CityInfoWebAPI.Controllers
 
         // GET /cities
         [HttpGet]
-        public IEnumerable<CityDto> GetCities() 
+        public async Task<IEnumerable<CityDto>> GetCitiesAsync() 
         {
-            var cities = this.repository.GetCities().Select(city => city.AsDto());
+            var cities = (await this.repository.GetCitiesAsync())
+                .Select(city => city.AsDto());
 
             return cities;
         }
 
         // GET /cities/{id}
         [HttpGet("{id}")]
-        public ActionResult<CityDto> GetCity(Guid id) 
+        public async Task<ActionResult<CityDto>> GetCityAsync(Guid id) 
         {
-            var city = this.repository.GetCity(id);            
+            var city = await this.repository.GetCityAsync(id);            
 
             if (city is null)
             {
@@ -45,7 +47,7 @@ namespace CityInfoWebAPI.Controllers
 
         // POST /cities
         [HttpPost]
-        public ActionResult<CreateCityDto> CreateCity(CreateCityDto cityDto)
+        public async Task<ActionResult<CreateCityDto>> CreateCityAsync(CreateCityDto cityDto)
         {
             City city = new City()
             {
@@ -57,16 +59,16 @@ namespace CityInfoWebAPI.Controllers
                 CreatedDate = DateTimeOffset.UtcNow
             };
 
-            this.repository.CreateCity(city);
+            await this.repository.CreateCityAsync(city);
 
-            return CreatedAtAction(nameof(this.GetCity), new { id = city.Id }, city.AsDto());
+            return CreatedAtAction(nameof(this.GetCityAsync), new { id = city.Id }, city.AsDto());
         }
 
         // PUT /cities/{id}
         [HttpPut]
-        public ActionResult UpdateCity(Guid id, UpdateCityDto cityDto)
+        public async Task<ActionResult> UpdateCityAsync(Guid id, UpdateCityDto cityDto)
         {
-            var existingCity = this.repository.GetCity(id);
+            var existingCity = await this.repository.GetCityAsync(id);
 
             if (existingCity is null)
             {
@@ -81,23 +83,23 @@ namespace CityInfoWebAPI.Controllers
                 Timezone = cityDto.Timezone,
             };
 
-            this.repository.UpdateCity(updatedCity);
+            await this.repository.UpdateCityAsync(updatedCity);
 
             return this.NoContent();
         }
 
         // DELETE /cities/{id}
         [HttpDelete("{id}")]
-        public ActionResult DeleteCity(Guid id) 
+        public async Task<ActionResult> DeleteCityAsync(Guid id) 
         {
-            var existingCity = this.repository.GetCity(id);
+            var existingCity = await this.repository.GetCityAsync(id);
 
             if (existingCity is null)
             {
                 return this.NotFound();
             }
 
-            this.repository.DeleteCity(id);
+            await this.repository.DeleteCityAsync(id);
 
             return this.NoContent();
         }
