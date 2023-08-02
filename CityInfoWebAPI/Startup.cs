@@ -62,19 +62,19 @@ namespace CityInfoWebAPI
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "CityInfoWebAPI v1");
-            });
-
+        {           
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-            }
 
-            app.UseHttpsRedirection();
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "CityInfoWebAPI v1");
+                });
+
+                app.UseHttpsRedirection();
+            }
 
             app.UseRouting();
 
