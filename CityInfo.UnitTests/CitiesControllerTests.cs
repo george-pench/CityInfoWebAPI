@@ -103,6 +103,53 @@ namespace CityInfo.UnitTests
             createdCity.CreatedDate.Should().BeCloseTo(DateTimeOffset.UtcNow, 1000);
         }
 
+        [Fact]
+        public async Task UpdateCityAsync_WithExistingCity_ReturnsNoContent()
+        {
+            // Arrange
+            var existingCity = this.CreateRandomCity();
+
+            this.repositoryStub.Setup(repo => repo
+                .GetCityAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(existingCity);
+
+            var cityId = existingCity.Id;
+            var cityToUpdate = new UpdateCityDto() 
+            {
+                Name = Guid.NewGuid().ToString(), 
+                Country = Guid.NewGuid().ToString(),
+                Population = existingCity.Population + 1,
+                Timezone = Guid.NewGuid().ToString()
+            };
+
+            var controller = new CitiesController(this.repositoryStub.Object);
+
+            // Act
+            var result = await controller.UpdateCityAsync(cityId, cityToUpdate);
+
+            // Assert
+            result.Should().BeOfType<NoContentResult>();          
+        }
+
+        [Fact]
+        public async Task DeleteCityAsync_WithExistingCity_ReturnsNoContent()
+        {
+            // Arrange
+            var existingCity = this.CreateRandomCity();
+
+            this.repositoryStub.Setup(repo => repo
+                .GetCityAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(existingCity);
+
+            var controller = new CitiesController(this.repositoryStub.Object);
+
+            // Act
+            var result = await controller.DeleteCityAsync(existingCity.Id);
+
+            // Assert
+            result.Should().BeOfType<NoContentResult>();
+        }
+
         private City CreateRandomCity() => new()
         {
             Id = Guid.NewGuid(),
