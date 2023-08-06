@@ -30,7 +30,7 @@ CityInfoWebAPI is a powerful web service that allows users to manage city inform
 ### Installation
 
 1. Clone the repository to your local machine:
-- git clone https://github.com/yourusername/CityInfoWebAPI.git
+- git clone https://github.com/george-pench/CityInfoWebAPI.git
 
 2. Navigate to the project directory:
 - cd CityInfoWebAPI
